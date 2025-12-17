@@ -57,27 +57,38 @@ def _run_inference(overrides, api_key, deployment_id):
         return None
 
 # 외부에서 호출하는 함수들도 키를 인자로 받아야 함
-def generate_faces(prompt_text, pm_options, api_key, deployment_id, batch_size=4):
-    overrides = {
-        "47": {"inputs": {"steps": 25}},
-        "24": {"inputs": {"batch_size": batch_size}},
-        "27": {"inputs": {"steps": 1}},
-        "11": {"inputs": {
-            "shot": pm_options.get("shot", "Half-length portrait"),
-            "lighting_type": pm_options.get("lighting", "Natural Lighting"),
-            "face_shape": pm_options.get("face_shape", "Oval"),
-            "eyes_color": pm_options.get("eyes_color", "Brown"),
-            "nationality_1": pm_options.get("nationality", "Korean")
-        }},
+def generate_faces(prompt_text, pm_options, api_key, deployment_id, widht, height, batch_size=4):
+    overrides = {        
         "10": {"inputs": {"text": prompt_text}},
+        "11": {"inputs": {
+              "gender": pm_options.get("Man","Woman"),
+              "nationality_1":pm_options.get("Chinese","Japanese","Korean","South Korean","Indian","Saudi","British","French","German","Italian","Spanish","American","Canadian","Brazilian","Mexican","Argentine","Egyptian","South African","Nigerian","Kenyan","Moroccan","Australian","New Zealander","Fijian","Samoan","Tongan"),
+              "body_type": :pm_options.get("Chubby","Curvy","Fat","Fit","Hefty","Large","Lanky","Muscular","Obese","Overweight","Petite","Plump","Short","Skinny","Slight","Slim","Small","Stout","Stocky","Tall","Thick","Tiny","Underweight","Well-built"]),
+              "eyes_color": pm_options.get("Albino", "Amber", "Blue", "Brown", "Green", "Gray", "Hazel", "Heterochromia", "Red", "Violet"),
+              "eyes_shape": pm_options.get("Almond Eyes Shape","Asian Eyes Shape","Close-Set Eyes Shape","Deep Set Eyes Shape","Downturned Eyes Shape","Double Eyelid Eyes Shape","Hooded Eyes Shape","Monolid Eyes Shape","Oval Eyes Shape","Protruding Eyes Shape","Round Eyes Shape","Upturned Eyes Shape"),
+              "lips_color": pm_options.get("Berry Lips","Black Lips","Blue Lips","Brown Lips","Burgundy Lips","Coral Lips","Glossy Red Lips","Mauve Lips","Orange Lips","Peach Lips","Pink Lips","Plum Lips","Purple Lips","Red Lips","Yellow Lips"),
+              "lips_shape": pm_options.get("Full Lips","Thin Lips","Plump Lips","Small Lips","Large Lips","Wide Lips","Round Lips","Heart-shaped Lips","Cupid's Bow Lips"),
+              "face_shape": pm_options.get("Oval","Round","Square","Heart","Diamond","Triangle","Inverted Triangle","Pear","Rectangle","Oblong","Long"),
+              "hair_style": pm_options.get("Bald","Buzz","Crew","Pixie","Bob","Long bob","Long straight","Wavy","Curly","Afro","Faded afro","Braided","Box braids","Cornrows","Dreadlocks","Pigtails","Ponytail","High ponytail","Bangs","Curtain bangs","Side-swept bangs","Mohawk","Faux hawk","Undercut","Pompadour","Quiff","Top Knot","Bun","Updo"),
+              "hair_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"),
+              "hair_length": pm_options.get("Short","Medium","Long"),
+              "beard": pm_options.get("Stubble Beard","Goatee","Full Beard","Van Dyke Beard","Circle Beard","Balbo Beard","Ducktail Beard","Chinstrap Beard","Chevron Mustache","Handlebar Mustache","Horseshoe Mustache","Pencil Mustache"),
+              "beard_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"),},
+        "24" : {"inputs":{
+            "width": widht,
+            "height": height,
+            "batch_size": batch_size}},
+        "47": {"inputs": {"steps": 1}},
+        "27": {"inputs": {"steps": 25}},
+        
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}} 
     }
     return _run_inference(overrides, api_key, deployment_id)
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
     overrides = {
-        "47": {"inputs": {"steps": 1}}, 
-        "27": {"inputs": {"steps": 30}}, 
+        "47": {"inputs": {"steps": 25}}, 
+        "27": {"inputs": {"steps": 1}}, 
         "85": {"inputs": {"image": face_image_url}}, 
         "55": {"inputs": {"text": outfit_prompt}}
     }
