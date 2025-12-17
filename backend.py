@@ -7,6 +7,7 @@ DUMMY_IMAGE_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYA
 
 # 내부 함수도 api_key와 deployment_id를 인자로 받도록 수정
 def _run_inference(overrides, api_key, deployment_id):
+    
     if not api_key or not deployment_id:
         print("❌ API Key 또는 Deployment ID가 없습니다.")
         return None
@@ -36,8 +37,11 @@ def _run_inference(overrides, api_key, deployment_id):
             time.sleep(2)
             status_res = requests.get(f"{BASE_URL}/deployments/{deployment_id}/requests/{request_id}/status", headers=headers)
             status = status_res.json().get("status", "").lower()
-            if status == "completed": break
-            elif status in ["failed", "error"]: return None
+            
+            if status == "completed": 
+                break
+            elif status in ["failed", "error"]: 
+                return None
             
         result_res = requests.get(f"{BASE_URL}/deployments/{deployment_id}/requests/{request_id}/result", headers=headers)
         outputs = result_res.json().get("outputs", {})
@@ -55,9 +59,9 @@ def _run_inference(overrides, api_key, deployment_id):
 # 외부에서 호출하는 함수들도 키를 인자로 받아야 함
 def generate_faces(prompt_text, pm_options, api_key, deployment_id, batch_size=4):
     overrides = {
-        "27": {"inputs": {"steps": 25}},
+        "47": {"inputs": {"steps": 25}},
         "24": {"inputs": {"batch_size": batch_size}},
-        "47": {"inputs": {"steps": 1}},
+        "27": {"inputs": {"steps": 1}},
         "11": {"inputs": {
             "shot": pm_options.get("shot", "Half-length portrait"),
             "lighting_type": pm_options.get("lighting", "Natural Lighting"),
@@ -72,8 +76,8 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, batch_size=4
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
     overrides = {
-        "27": {"inputs": {"steps": 1}}, 
-        "47": {"inputs": {"steps": 30}}, 
+        "47": {"inputs": {"steps": 1}}, 
+        "27": {"inputs": {"steps": 30}}, 
         "85": {"inputs": {"image": face_image_url}}, 
         "55": {"inputs": {"text": outfit_prompt}}
     }
