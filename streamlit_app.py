@@ -45,13 +45,38 @@ pm_options["face_shape"] = st.sidebar.selectbox("얼굴형", ["Oval", "Square wi
 # =================================================================
 if st.session_state.step == 1:
     st.subheader("Step 1: 캐릭터 기본 정보 입력")
+
+    # --- 비율 선택 UI 추가 ---
+    col_ratio, col_num = st.columns(2)
     
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        base_prompt = st.text_input("기본 프롬프트 (예: 12-year-old boy, buzz cut hair)", 
-                                    value="12-year-old Korean boy, white t-shirt, Buzz cut hair")
-    with col2:
+    with col_ratio:
+        ratio_option = st.selectbox(
+            "이미지 비율 (Aspect Ratio)",
+            ["세로형 (9:16) - 인물 중심", "가로형 (16:9) - 영화 느낌", "정사각형 (1:1) - SNS"]
+        )
+        
+        # 선택에 따라 실제 픽셀값 할당 (Flux 모델 권장 해상도 기준)
+        if "세로형" in ratio_option:
+            width, height = 896, 1152
+        elif "가로형" in ratio_option:
+            width, height = 1152, 896
+        else:
+            width, height = 1024, 1024
+
+    with col_num:
         num_images = st.number_input("생성할 장수", min_value=1, max_value=4, value=2)
+
+    # --- 프롬프트 입력 ---
+    base_prompt = st.text_input("기본 프롬프트", value="12-year-old Korean boy, white t-shirt, Buzz cut hair")
+    
+    # col1, col2 = st.columns([3, 1])
+    # with col1:
+    #     base_prompt = st.text_input("기본 프롬프트 (예: 12-year-old boy, buzz cut hair)", 
+    #                                 value="12-year-old Korean boy, white t-shirt, Buzz cut hair")
+
+        
+    # with col2:
+    #     num_images = st.number_input("생성할 장수", min_value=1, max_value=4, value=2)
 
     if st.button("🚀 캐릭터 얼굴 생성 시작", use_container_width=True):
         with st.spinner("ComfyUI가 열심히 그림을 그리고 있습니다... (약 20~40초 소요)"):
