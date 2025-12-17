@@ -33,11 +33,37 @@ if "selected_face_url" not in st.session_state:
 
 # --- 사이드바: Portrait Master 옵션 ---
 st.sidebar.header("⚙️ 캐릭터 세부 설정 (Portrait Master)")
+
+           "gender": pm_options.get("Man","Woman"),
+              "nationality_1":pm_options.get("Chinese","Japanese","Korean","South Korean","Indian","Saudi","British","French","German","Italian","Spanish","American","Canadian","Brazilian","Mexican","Argentine","Egyptian","South African","Nigerian","Kenyan","Moroccan","Australian","New Zealander","Fijian","Samoan","Tongan"),
+              "body_type": :pm_options.get(]),
+              "eyes_color": pm_options.get(,
+              "eyes_shape": pm_options.get("),
+              "lips_color": pm_options.get(),
+              "lips_shape": pm_options.get(),
+              "face_shape": pm_options.get(),
+              "hair_style": pm_options.get(),
+              "hair_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"),
+              "hair_length": pm_options.get(),
+              "beard": pm_options.get(),
+              "beard_color": pm_options.get(),},
+
+
 pm_options = {}
-pm_options["nationality"] = st.sidebar.selectbox("국적", ["Korean", "Japanese", "American", "British", "Chinese"])
-pm_options["shot"] = st.sidebar.selectbox("카메라 앵글 (Shot)", ["Close up", "Half-length portrait", "Full body", "Cowboy shot"])
-pm_options["eyes_color"] = st.sidebar.selectbox("눈동자 색상", ["Brown", "Black", "Blue", "Green"])
-pm_options["face_shape"] = st.sidebar.selectbox("얼굴형", ["Oval", "Square with Soft Jaw", "Round", "Diamond"])
+pm_options["gender"] = st.sidebar.selectbox("Gender", ["Man","Woman"])
+pm_options["nationality"] = st.sidebar.selectbox("Nationality", ["Chinese","Japanese","Korean","South Korean","Indian","Saudi","British","French","German","Italian","Spanish","American","Canadian","Brazilian","Mexican","Argentine","Egyptian","South African","Nigerian","Kenyan","Moroccan","Australian","New Zealander","Fijian","Samoan","Tongan"])
+pm_options["body_type"] = st.sidebar.selectbox("Body Type", ["Chubby","Curvy","Fat","Fit","Hefty","Large","Lanky","Muscular","Obese","Overweight","Petite","Plump","Short","Skinny","Slight","Slim","Small","Stout","Stocky","Tall","Thick","Tiny","Underweight","Well-built"])
+pm_options["eyes_color"] = st.sidebar.selectbox("Eyes Color", ["Albino", "Amber", "Blue", "Brown", "Green", "Gray", "Hazel", "Heterochromia", "Red", "Violet")])
+pm_options["eyes_shape"] = st.sidebar.selectbox("Eyes Shape", ["Almond Eyes Shape","Asian Eyes Shape","Close-Set Eyes Shape","Deep Set Eyes Shape","Downturned Eyes Shape","Double Eyelid Eyes Shape","Hooded Eyes Shape","Monolid Eyes Shape","Oval Eyes Shape","Protruding Eyes Shape","Round Eyes Shape","Upturned Eyes Shape"])
+pm_options["lips_color"] = st.sidebar.selectbox("Lips Color", ["Berry Lips","Black Lips","Blue Lips","Brown Lips","Burgundy Lips","Coral Lips","Glossy Red Lips","Mauve Lips","Orange Lips","Peach Lips","Pink Lips","Plum Lips","Purple Lips","Red Lips","Yellow Lips"])
+pm_options["lips_shape"] = st.sidebar.selectbox("Lips Shape", ["Full Lips","Thin Lips","Plump Lips","Small Lips","Large Lips","Wide Lips","Round Lips","Heart-shaped Lips","Cupid's Bow Lips"])
+pm_options["face_shape"] = st.sidebar.selectbox("Face Shape", ["Oval","Round","Square","Heart","Diamond","Triangle","Inverted Triangle","Pear","Rectangle","Oblong","Long"])
+pm_options["hair_style"] = st.sidebar.selectbox("Hair Style", ["Bald","Buzz","Crew","Pixie","Bob","Long bob","Long straight","Wavy","Curly","Afro","Faded afro","Braided","Box braids","Cornrows","Dreadlocks","Pigtails","Ponytail","High ponytail","Bangs","Curtain bangs","Side-swept bangs","Mohawk","Faux hawk","Undercut","Pompadour","Quiff","Top Knot","Bun","Updo"])
+pm_options["hair_color"] = st.sidebar.selectbox("Hair Color", ["Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"])
+pm_options["hair_length"] = st.sidebar.selectbox("Hair Length", ["Short","Medium","Long"])
+pm_options["beard"] = st.sidebar.selectbox("Beard", ["Stubble Beard","Goatee","Full Beard","Van Dyke Beard","Circle Beard","Balbo Beard","Ducktail Beard","Chinstrap Beard","Chevron Mustache","Handlebar Mustache","Horseshoe Mustache","Pencil Mustache"])
+pm_options["beard_color"] = st.sidebar.selectbox("Beard Color", ["Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"])
+
 # 필요하다면 조명 등 더 추가 가능
 
 # =================================================================
