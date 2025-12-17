@@ -95,6 +95,8 @@ if st.session_state.step == 1:
                                             pm_options, 
                                             api_key,       
                                             deployment_id, 
+                                            width=width,    # 👈 새로 추가된 필수 인자
+                                            height=height,  # 👈 새로 추가된 필수 인자
                                             batch_size=num_images)
             
             if images:
