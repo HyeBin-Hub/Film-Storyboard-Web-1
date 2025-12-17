@@ -128,10 +128,24 @@ def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
     # 전신 저장 노드(예: 54번) 결과 가져오기
     return _extract_images(outputs, "54")
 
-# (참고) 중복되는 이미지 추출 코드는 함수로 빼면 깔끔합니다.
 def _extract_images(outputs, node_id):
     image_urls = []
+    
+    # 1. 우리가 찾는 노드 ID(84 또는 54)가 있는지 확인
     if node_id in outputs:
         for img in outputs[node_id].get("images", []):
             if img.get("url"): image_urls.append(img["url"])
-    return image_urls
+        return image_urls
+        
+    # 2. 없으면 터미널에 경고 메시지 출력 (범인 색출!)
+    else:
+        print(f"\n🚨 [오류 발생] 결과에서 노드 ID '{node_id}'를 찾을 수 없습니다!")
+        print(f"👀 현재 서버가 보내준 결과물 노드 목록: {list(outputs.keys())}")
+        
+        # 혹시 ID가 바뀌었는지 확인
+        if len(outputs) > 0:
+            print("👉 JSON 파일에서 Save Image 노드의 번호가 바뀌었는지 확인해보세요.")
+        else:
+            print("👉 생성된 이미지가 하나도 없습니다. 워크플로우 에러일 가능성이 높습니다.")
+            
+        return []
