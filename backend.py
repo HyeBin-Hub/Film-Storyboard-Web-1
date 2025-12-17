@@ -94,24 +94,14 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
         "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}},
 
-        "90": {"inputs": {"mute": "disabled"}}, # 얼굴 그룹 켜기 (변수명 확인 필수!)
-        "91": {"inputs": {"mute": "enabled"}}   # 전신 그룹 끄기
+        "114": {"inputs": {"select": 1}}
     }
 
     outputs = _run_inference(overrides, api_key, deployment_id)
     if not outputs: return []
 
-    # [수정 포인트 2] 얼굴 생성 단계이므로 "Node 84"의 결과만 가져옵니다.
-    target_node_id = "84" 
-    image_urls = []
-    
-    # 해당 노드의 결과가 있는지 확인 후 추출
-    if target_node_id in outputs:
-        for img in outputs[target_node_id].get("images", []):
-            if img.get("url"): image_urls.append(img["url"])
-            
-    return image_urls
-    # return _run_inference(overrides, api_key, deployment_id)
+    # 얼굴 저장 노드(예: 84번) 결과 가져오기
+    return _extract_images(outputs, "84")
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
     
@@ -129,22 +119,19 @@ def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
         "85": {"inputs": {"image": base64_image}}, 
         "55": {"inputs": {"text": outfit_prompt}},
         
-        "90": {"inputs": {"mute": "enabled"}},   # 얼굴 그룹 끄기
-        "91": {"inputs": {"mute": "disabled"}}   # 전신 그룹 켜기
+        "114": {"inputs": {"select": 2}}
     }
     
     outputs = _run_inference(overrides, api_key, deployment_id)
     if not outputs: return []
 
-    # [수정 포인트 3] 전신 생성 단계이므로 "Node 54"의 결과만 가져옵니다.
-    target_node_id = "54"
+    # 전신 저장 노드(예: 54번) 결과 가져오기
+    return _extract_images(outputs, "54")
+
+# (참고) 중복되는 이미지 추출 코드는 함수로 빼면 깔끔합니다.
+def _extract_images(outputs, node_id):
     image_urls = []
-    
-    if target_node_id in outputs:
-        for img in outputs[target_node_id].get("images", []):
+    if node_id in outputs:
+        for img in outputs[node_id].get("images", []):
             if img.get("url"): image_urls.append(img["url"])
-            
     return image_urls
-
-
-    # return _run_inference(overrides, api_key, deployment_id)
