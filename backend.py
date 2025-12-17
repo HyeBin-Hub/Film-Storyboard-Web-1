@@ -90,11 +90,11 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
         }},
         
         "24" : {"inputs":{"width": width, "height": height, "batch_size": batch_size}},
-        "47": {"inputs": {"steps": 1}},
-        "27": {"inputs": {"steps": 25}},
+        # "47": {"inputs": {"steps": 1}},
+        # "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}},
 
-        "114": {"inputs": {"select": 1}}
+        "126": {"inputs": {"select": 1}}
     }
 
     outputs = _run_inference(overrides, api_key, deployment_id)
@@ -114,12 +114,12 @@ def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
         return []
 
     overrides = {
-        "47": {"inputs": {"steps": 25}}, 
-        "27": {"inputs": {"steps": 1}}, 
+        # "47": {"inputs": {"steps": 25}}, 
+        # "27": {"inputs": {"steps": 1}}, 
         "85": {"inputs": {"image": base64_image}}, 
         "55": {"inputs": {"text": outfit_prompt}},
         
-        "114": {"inputs": {"select": 2}}
+        "126": {"inputs": {"select": 2}}
     }
     
     outputs = _run_inference(overrides, api_key, deployment_id)
