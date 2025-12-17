@@ -1,9 +1,25 @@
 # backend.py
 import requests
 import time
+import base64 # 추가됨
 
 BASE_URL = "https://api.runcomfy.net/prod/v1"
 DUMMY_IMAGE_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+
+def _url_to_base64(url):
+    """
+    URL 이미지를 다운로드 받아 Base64 문자열로 변환합니다.
+    """
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        # 바이너리 데이터를 base64로 인코딩
+        encoded_string = base64.b64encode(response.content).decode('utf-8')
+        # ComfyUI가 이해하는 형식(prefix)을 붙여줌
+        return f"data:image/png;base64,{encoded_string}"
+    except Exception as e:
+        print(f"❌ 이미지 변환 실패: {e}")
+        return None
 
 # 내부 함수도 api_key와 deployment_id를 인자로 받도록 수정
 def _run_inference(overrides, api_key, deployment_id):
@@ -44,13 +60,7 @@ def _run_inference(overrides, api_key, deployment_id):
                 return None
             
         result_res = requests.get(f"{BASE_URL}/deployments/{deployment_id}/requests/{request_id}/result", headers=headers)
-        outputs = result_res.json().get("outputs", {})
-        
-        # image_urls = []
-        # for node_id, content in outputs.items():
-        #     for img in content.get("images", []):
-        #         if img.get("url"): image_urls.append(img["url"])
-        return outputs
+        return result_res.json().get("outputs", {})
 
     except Exception as e:
         print(f"API Error: {e}")
@@ -82,7 +92,10 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
         "24" : {"inputs":{"width": width, "height": height, "batch_size": batch_size}},
         "47": {"inputs": {"steps": 1}},
         "27": {"inputs": {"steps": 25}},
-        "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}} 
+        "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}},
+
+        "90": {"inputs": {"mute": "disabled"}}, # 얼굴 그룹 켜기 (변수명 확인 필수!)
+        "91": {"inputs": {"mute": "enabled"}}   # 전신 그룹 끄기
     }
 
     outputs = _run_inference(overrides, api_key, deployment_id)
@@ -101,11 +114,23 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
     # return _run_inference(overrides, api_key, deployment_id)
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
+    
+    # 1. URL을 Base64로 변환 (중요!)
+    print("🔄 이미지를 서버로 전송하기 위해 변환 중...")
+    base64_image = _url_to_base64(face_image_url)
+    
+    if not base64_image:
+        print("❌ 이미지 변환에 실패하여 작업을 중단합니다.")
+        return []
+
     overrides = {
         "47": {"inputs": {"steps": 25}}, 
         "27": {"inputs": {"steps": 1}}, 
-        "85": {"inputs": {"image": face_image_url}}, 
-        "55": {"inputs": {"text": outfit_prompt}}
+        "85": {"inputs": {"image": base64_image}}, 
+        "55": {"inputs": {"text": outfit_prompt}},
+        
+        "90": {"inputs": {"mute": "enabled"}},   # 얼굴 그룹 끄기
+        "91": {"inputs": {"mute": "disabled"}}   # 전신 그룹 켜기
     }
     
     outputs = _run_inference(overrides, api_key, deployment_id)
