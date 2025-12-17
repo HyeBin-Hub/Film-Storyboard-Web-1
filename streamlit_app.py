@@ -11,7 +11,7 @@ st.set_page_config(page_title="Movie Character Creator", layout="wide")
 if "RUNCOMFY_API_KEY" in st.secrets:
     api_key = st.secrets["RUNCOMFY_API_KEY"]
     deployment_id = st.secrets["DEPLOYMENT_ID"]
-    st.sidebar.success("API Key가 로드되었습니다! ✅")
+    # st.sidebar.success("API Key가 로드되었습니다! ✅")
 else:
     # 2. 파일이 없으면 입력창 표시
     api_key = st.sidebar.text_input("RunComfy API Key", type="password")
