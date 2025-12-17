@@ -5,14 +5,14 @@ import requests
 import time
 
 # ==========================================
-# 1. RunComfy Serverless API 함수 (사용자 코드 기반 수정)
+# 1. RunComfy Serverless API 함수
 # ==========================================
 BASE_URL = "https://api.runcomfy.net/prod/v1"
 
 def runcomfy_generate_image(
     api_key: str,
     deployment_id: str,
-    overrides: dict,  # ★ 핵심 수정: 고정된 payload 대신 외부에서 주입받음
+    overrides: dict,
     poll_interval: int = 2,
 ):
     headers = {
@@ -36,10 +36,10 @@ def runcomfy_generate_image(
         submit_res.raise_for_status()
         request_id = submit_res.json()["request_id"]
     except Exception as e:
-        st.error(f"API 요청 실패: {e}")
-        return None, None
+        st.error(f"❌ API 요청 실패: {e}")
+        return None, {}
 
-    # 2) Poll
+    # 2) Poll (대기)
     while True:
         try:
             st_res = requests.get(
@@ -58,10 +58,10 @@ def runcomfy_generate_image(
             
             time.sleep(poll_interval)
         except Exception as e:
-            st.error(f"상태 확인 중 오류: {e}")
-            return None, None
+            st.error(f"❌ 상태 확인 중 오류: {e}")
+            return None, {}
 
-    # 3) Result
+    # 3) Result (결과 확보)
     result_res = requests.get(
         f"{BASE_URL}/deployments/{deployment_id}/requests/{request_id}/result",
         headers=headers,
@@ -70,31 +70,31 @@ def runcomfy_generate_image(
     result_res.raise_for_status()
     result_data = result_res.json()
 
-    # 4) Parse Outputs (모든 이미지 수집)
-    # 특정 노드만 찾는 게 아니라, 출력된 모든 이미지를 리스트로 반환
+    # 4) Parse Outputs
     outputs = result_data.get("outputs", {})
-    image_urls = []
+    parsed_images = {} 
 
     if isinstance(outputs, dict):
         for node_id, content in outputs.items():
             imgs = content.get("images", [])
-            for img in imgs:
-                image_urls.append(img.get("url"))
+            urls = [img.get("url") for img in imgs if img.get("url")]
+            if urls:
+                parsed_images[node_id] = urls
 
-    return request_id, image_urls
+    return request_id, parsed_images
 
 
 # ==========================================
 # 2. Streamlit 앱 설정
 # ==========================================
-st.set_page_config(page_title="Storyboard Generator", layout="wide")
+st.set_page_config(page_title="Storyboard Generator V3", layout="wide")
 
-# Secrets에서 키 가져오기 (없으면 UI에서 입력)
+# Secrets 또는 사이드바 입력
 api_key = st.sidebar.text_input("RunComfy API Key", value=st.secrets.get("RUNCOMFY_API_KEY", ""), type="password")
 deployment_id = st.sidebar.text_input("Deployment ID", value=st.secrets.get("RUNCOMFY_DEPLOYMENT_ID", ""))
 
 if not api_key or not deployment_id:
-    st.warning("좌측 사이드바에 API Key와 Deployment ID를 입력해주세요.")
+    st.warning("👈 사이드바에 API Key와 Deployment ID를 입력해주세요.")
     st.stop()
 
 # 상태 초기화
@@ -104,8 +104,8 @@ if "selected_face_url" not in st.session_state: st.session_state.selected_face_u
 if "final_scene_url" not in st.session_state: st.session_state.final_scene_url = None
 
 
-st.title("🎬 Storyboard Generator (Serverless)")
-st.markdown("RunComfy Serverless API를 사용하여 주인공을 캐스팅하고 씬을 생성합니다.")
+st.title("🎬 Storyboard Generator (Muter Control)")
+st.caption("Using Fast Groups Muter (Node 78) for Control")
 
 # ==========================================
 # [STEP 1] 주인공 오디션 (얼굴 생성)
@@ -116,42 +116,44 @@ if st.session_state.step == 1:
     col1, col2 = st.columns([1, 2])
     with col1:
         st.info("AI가 4명의 배우 후보를 생성합니다.")
+        batch_size = st.slider("생성할 후보 수", 1, 4, 4)
+
         if st.button("📸 오디션 시작", type="primary"):
             
-            # [Step 1 Payload]
-            # Muter(Node 78): Group 1 ON ("yes"), Group 2 OFF ("no")
-            # Face Seed(Node 2): Random
+            # [Step 1 전략]
+            # Node 78 (Muter): match_1(Face)=YES, match_2(Body)=NO
+            
             seed = random.randint(1, 2**31 - 1)
             
             overrides = {
                 "78": {
                     "inputs": {
-                        "match_1": "yes",
-                        "match_2": "no"
+                        "match_1": "yes",  # Group 1 (Face) 켜기
+                        "match_2": "no"    # Group 2 (Body) 끄기
                     }
                 },
-                "2": {
-                    "inputs": {
-                        "seed": seed
-                    }
-                }
+                "2": { "inputs": { "seed": seed } },      # Face Seed
+                "24": { "inputs": { "batch_size": batch_size } }
             }
 
             with st.spinner("배우 섭외 중..."):
-                req_id, img_urls = runcomfy_generate_image(api_key, deployment_id, overrides)
+                req_id, outputs = runcomfy_generate_image(api_key, deployment_id, overrides)
                 
-                if img_urls:
-                    st.session_state.face_candidates = img_urls
+                # Node 84 (Face SaveImage) 결과 확인
+                if outputs and "84" in outputs:
+                    st.session_state.face_candidates = outputs["84"]
                     st.rerun()
+                elif outputs:
+                    st.error(f"결과를 찾을 수 없습니다. (Node 84). 반환된 노드: {outputs.keys()}")
 
-    # 결과 표시 및 선택
     if st.session_state.face_candidates:
         st.divider()
+        st.subheader("마음에 드는 배우를 선택하세요")
         cols = st.columns(4)
         for idx, url in enumerate(st.session_state.face_candidates):
-            with cols[idx]:
+            with cols[idx % 4]:
                 st.image(url, use_container_width=True)
-                if st.button(f"✅ {idx+1}번 배우 선택", key=f"sel_{idx}"):
+                if st.button(f"✅ 선택 ({idx+1})", key=f"sel_{idx}"):
                     st.session_state.selected_face_url = url
                     st.session_state.step = 2
                     st.rerun()
@@ -171,53 +173,41 @@ elif st.session_state.step == 2:
             st.rerun()
             
     with col_r:
-        prompt = st.text_area("촬영 프롬프트", value="white t-shirt, black pants, running in the rain, cyberpunk city background")
+        prompt = st.text_area("촬영 프롬프트", 
+                            value="white t-shirt, black pants, yellow sneakers, running in the park")
         
         if st.button("🎬 촬영 시작", type="primary"):
             
-            # [Step 2 Payload]
-            # Muter(Node 78): Group 1 OFF ("no"), Group 2 ON ("yes")
-            # Image Input(Node 83): 선택된 이미지 URL 주입
-            # Text Input(Node 55): 프롬프트 입력
-            # Body Seed(Node 47): Random
+            # [Step 2 전략]
+            # Node 78 (Muter): match_1(Face)=NO, match_2(Body)=YES
+            # Node 85 (LoadImage): URL 주입
             
             seed = random.randint(1, 2**31 - 1)
             
             overrides = {
                 "78": {
                     "inputs": {
-                        "match_1": "no",
-                        "match_2": "yes"
+                        "match_1": "no",   # Group 1 끄기
+                        "match_2": "yes"   # Group 2 켜기
                     }
                 },
-                "83": {
-                    "inputs": {
-                        # Serverless 환경에서는 URL로 이미지를 전달하는 것이 가장 안전합니다.
-                        # Node 83이 LoadImage라면 URL 처리가 안될 수 있으므로, 
-                        # 워크플로우에서 LoadImageFromURL 같은 노드를 쓰거나 
-                        # RunComfy가 지원하는 이미지 입력 방식을 확인해야 합니다.
-                        # 여기서는 사용자가 제공한 방식대로 'image' input에 URL을 넣습니다.
-                        "image": st.session_state.selected_face_url
-                    }
-                },
-                "55": {
-                    "inputs": {
-                        "text": prompt
-                    }
-                },
-                "47": {
-                    "inputs": {
-                        "seed": seed
-                    }
+                "47": { "inputs": { "seed": seed } },        # Body Seed
+                "55": { "inputs": { "text": prompt } },      # Body Prompt
+                "85": { 
+                    "inputs": { 
+                        "image": st.session_state.selected_face_url 
+                    } 
                 }
             }
 
             with st.spinner("촬영 진행 중..."):
-                req_id, img_urls = runcomfy_generate_image(api_key, deployment_id, overrides)
+                req_id, outputs = runcomfy_generate_image(api_key, deployment_id, overrides)
                 
-                if img_urls:
-                    # 결과 중 마지막 이미지(전신)를 선택
-                    st.session_state.final_scene_url = img_urls[0] 
+                # Node 54 (Body SaveImage) 결과 확인
+                if outputs and "54" in outputs:
+                    st.session_state.final_scene_url = outputs["54"][0]
+                elif outputs:
+                    st.error(f"결과를 찾을 수 없습니다 (Node 54). 반환된 노드: {outputs.keys()}")
     
     if st.session_state.final_scene_url:
         st.divider()
