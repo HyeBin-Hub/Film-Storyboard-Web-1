@@ -91,7 +91,7 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
         
         "24" : {"inputs":{"width": width, "height": height, "batch_size": batch_size}},
         # "47": {"inputs": {"steps": 1}},
-        # "27": {"inputs": {"steps": 25}},
+        "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}},
 
         "126": {"inputs": {"select": 1}}
@@ -114,7 +114,7 @@ def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
         return []
 
     overrides = {
-        # "47": {"inputs": {"steps": 25}}, 
+        "47": {"inputs": {"steps": 25}}, 
         # "27": {"inputs": {"steps": 1}}, 
         "85": {"inputs": {"image": base64_image}}, 
         "55": {"inputs": {"text": outfit_prompt}},
