@@ -6,8 +6,6 @@ import base64
 # =================================================================
 # 설정: 본인의 API KEY와 DEPLOYMENT ID로 교체하세요
 # =================================================================
-RUNCOMFY_API_KEY = "21a3ae61-5534-4d07-a067-f19a39d3c9f2"
-DEPLOYMENT_ID = "1c022a69-17dc-44e2-99e5-2eb212ab6238"
 BASE_URL = "https://api.runcomfy.net/prod/v1"
 
 # 에러 방지용 1x1 투명 픽셀 (Step 1에서 PuLID 노드가 비어있으면 에러나는 것 방지)
