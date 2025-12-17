@@ -73,7 +73,7 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, widht, heigh
               "hair_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"),
               "hair_length": pm_options.get("Short","Medium","Long"),
               "beard": pm_options.get("Stubble Beard","Goatee","Full Beard","Van Dyke Beard","Circle Beard","Balbo Beard","Ducktail Beard","Chinstrap Beard","Chevron Mustache","Handlebar Mustache","Horseshoe Mustache","Pencil Mustache"),
-              "beard_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"),},
+              "beard_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper")}},
         "24" : {"inputs":{
             "width": widht,
             "height": height,
