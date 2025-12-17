@@ -94,7 +94,7 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
         # "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}},
 
-        "126": {"inputs": {"select": 2}}
+        "126": {"inputs": {"select": 0}}
     }
 
     outputs = _run_inference(overrides, api_key, deployment_id)
