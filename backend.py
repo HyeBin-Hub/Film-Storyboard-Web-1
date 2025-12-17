@@ -57,7 +57,7 @@ def _run_inference(overrides, api_key, deployment_id):
         return None
 
 # 외부에서 호출하는 함수들도 키를 인자로 받아야 함
-def generate_faces(prompt_text, pm_options, api_key, deployment_id, widht, height, batch_size=4):
+def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, height, batch_size=4):
     overrides = {        
         "10": {"inputs": {"text": prompt_text}},
         "11": {"inputs": {
@@ -74,7 +74,7 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, widht, heigh
               "hair_length": pm_options.get("Short","Medium","Long"),
               "beard": pm_options.get("Stubble Beard","Goatee","Full Beard","Van Dyke Beard","Circle Beard","Balbo Beard","Ducktail Beard","Chinstrap Beard","Chevron Mustache","Handlebar Mustache","Horseshoe Mustache","Pencil Mustache"),
               "beard_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper")}},
-        "24" : {"inputs":{"width": widht,"height": height, "batch_size": batch_size}},
+        "24" : {"inputs":{"width": width,"height": height, "batch_size": batch_size}},
         "47": {"inputs": {"steps": 1}},
         "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}} 
