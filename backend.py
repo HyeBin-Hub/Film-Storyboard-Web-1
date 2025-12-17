@@ -115,7 +115,7 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
     if not outputs: return []
 
     # 얼굴 저장 노드(예: 84번) 결과 가져오기
-    return _extract_images(outputs, "84")
+    return _extract_images(outputs, "54")
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
     
