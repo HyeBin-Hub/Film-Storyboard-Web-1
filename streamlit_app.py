@@ -5,7 +5,7 @@ import backend # 위에서 만든 backend.py 임포트
 st.set_page_config(page_title="Movie Character Creator", layout="wide")
 
 # --- 🔑 API Key 관리 로직 ---
-st.sidebar.title("🔐 API 설정")
+# st.sidebar.title("🔐 API 설정")
 
 # 1. secrets.toml 파일에서 먼저 찾아봄
 if "RUNCOMFY_API_KEY" in st.secrets:
