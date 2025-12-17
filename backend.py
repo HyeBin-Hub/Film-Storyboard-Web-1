@@ -60,26 +60,30 @@ def _run_inference(overrides, api_key, deployment_id):
 def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, height, batch_size=4):
     overrides = {        
         "10": {"inputs": {"text": prompt_text}},
+        
+        # 핵심 수정: 여기서 리스트를 나열하지 마세요! 
+        # app.py에서 선택된 값 하나만 pm_options 딕셔너리에 담겨서 넘어옵니다.
         "11": {"inputs": {
-              "gender": pm_options.get("Man","Woman"),
-              "nationality":pm_options.get("nationality", "Chinese"),
-              "body_type": pm_options.get("body_type","Chubb”),
-              "eyes_color": pm_options.get("eyes_color", "Albino"),
-              "eyes_shape": pm_options.get("eyes_shape", "Almond Eyes Shape"),
-              "lips_color": pm_options.get("lips_color", "Berry Lips"),
-              "lips_shape": pm_options.get("lips_shape", "Full Lips"),
+              "gender": pm_options.get("gender", "Woman"), # 키 이름도 gender로 맞춤
+              "nationality_1": pm_options.get("nationality_1", "Korean"),
+              "body_type": pm_options.get("body_type", "Fit"),
+              "eyes_color": pm_options.get("eyes_color", "Brown"),
+              "eyes_shape": pm_options.get("eyes_shape", "Round Eyes Shape"),
+              "lips_color": pm_options.get("lips_color", "Red Lips"),
+              "lips_shape": pm_options.get("lips_shape", "Regular"),
               "face_shape": pm_options.get("face_shape", "Oval"),
-              "hair_style": pm_options.get("hair_style", "Bald"),
+              "hair_style": pm_options.get("hair_style", "Long straight"),
               "hair_color": pm_options.get("hair_color", "Black"),
-              "hair_length": pm_options.get("hair_length", "Short"),
-              "beard": pm_options.get("beard", "Stubble Beard"),
+              "hair_length": pm_options.get("hair_length", "Long"),
+              "beard": pm_options.get("beard", "Clean Shaven"), # 수염 없음 기본값 필요
               "beard_color": pm_options.get("beard_color", "Black")
-                                          }},
-        "24" : {"inputs":{"width": width,"height": height, "batch_size": batch_size}},
+        }},
+        
+        "24" : {"inputs":{"width": width, "height": height, "batch_size": batch_size}},
         "47": {"inputs": {"steps": 1}},
         "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}} 
-        }
+    }
     return _run_inference(overrides, api_key, deployment_id)
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
