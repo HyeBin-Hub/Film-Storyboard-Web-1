@@ -33,22 +33,6 @@ if "selected_face_url" not in st.session_state:
 
 # --- 사이드바: Portrait Master 옵션 ---
 st.sidebar.header("⚙️ 캐릭터 세부 설정 (Portrait Master)")
-
-           "gender": pm_options.get("Man","Woman"),
-              "nationality_1":pm_options.get("Chinese","Japanese","Korean","South Korean","Indian","Saudi","British","French","German","Italian","Spanish","American","Canadian","Brazilian","Mexican","Argentine","Egyptian","South African","Nigerian","Kenyan","Moroccan","Australian","New Zealander","Fijian","Samoan","Tongan"),
-              "body_type": :pm_options.get(]),
-              "eyes_color": pm_options.get(,
-              "eyes_shape": pm_options.get("),
-              "lips_color": pm_options.get(),
-              "lips_shape": pm_options.get(),
-              "face_shape": pm_options.get(),
-              "hair_style": pm_options.get(),
-              "hair_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper"),
-              "hair_length": pm_options.get(),
-              "beard": pm_options.get(),
-              "beard_color": pm_options.get(),},
-
-
 pm_options = {}
 pm_options["gender"] = st.sidebar.selectbox("Gender", ["Man","Woman"])
 pm_options["nationality"] = st.sidebar.selectbox("Nationality", ["Chinese","Japanese","Korean","South Korean","Indian","Saudi","British","French","German","Italian","Spanish","American","Canadian","Brazilian","Mexican","Argentine","Egyptian","South African","Nigerian","Kenyan","Moroccan","Australian","New Zealander","Fijian","Samoan","Tongan"])
