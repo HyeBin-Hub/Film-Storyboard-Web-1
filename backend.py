@@ -74,15 +74,11 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, widht, heigh
               "hair_length": pm_options.get("Short","Medium","Long"),
               "beard": pm_options.get("Stubble Beard","Goatee","Full Beard","Van Dyke Beard","Circle Beard","Balbo Beard","Ducktail Beard","Chinstrap Beard","Chevron Mustache","Handlebar Mustache","Horseshoe Mustache","Pencil Mustache"),
               "beard_color": pm_options.get("Black","Jet Black","Blonde","Platinum","Brown","Chestnut","Auburn","Red","Strawberry","Gray","Silver","White","Salt and pepper")}},
-        "24" : {"inputs":{
-            "width": widht,
-            "height": height,
-            "batch_size": batch_size}},
+        "24" : {"inputs":{"width": widht,"height": height, "batch_size": batch_size}},
         "47": {"inputs": {"steps": 1}},
         "27": {"inputs": {"steps": 25}},
-        
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}} 
-    }
+        }
     return _run_inference(overrides, api_key, deployment_id)
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
