@@ -46,11 +46,11 @@ def _run_inference(overrides, api_key, deployment_id):
         result_res = requests.get(f"{BASE_URL}/deployments/{deployment_id}/requests/{request_id}/result", headers=headers)
         outputs = result_res.json().get("outputs", {})
         
-        image_urls = []
-        for node_id, content in outputs.items():
-            for img in content.get("images", []):
-                if img.get("url"): image_urls.append(img["url"])
-        return image_urls
+        # image_urls = []
+        # for node_id, content in outputs.items():
+        #     for img in content.get("images", []):
+        #         if img.get("url"): image_urls.append(img["url"])
+        return outputs
 
     except Exception as e:
         print(f"API Error: {e}")
@@ -84,7 +84,21 @@ def generate_faces(prompt_text, pm_options, api_key, deployment_id, width, heigh
         "27": {"inputs": {"steps": 25}},
         "85": {"inputs": {"image": DUMMY_IMAGE_BASE64}} 
     }
-    return _run_inference(overrides, api_key, deployment_id)
+
+    outputs = _run_inference(overrides, api_key, deployment_id)
+    if not outputs: return []
+
+    # [수정 포인트 2] 얼굴 생성 단계이므로 "Node 84"의 결과만 가져옵니다.
+    target_node_id = "84" 
+    image_urls = []
+    
+    # 해당 노드의 결과가 있는지 확인 후 추출
+    if target_node_id in outputs:
+        for img in outputs[target_node_id].get("images", []):
+            if img.get("url"): image_urls.append(img["url"])
+            
+    return image_urls
+    # return _run_inference(overrides, api_key, deployment_id)
 
 def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
     overrides = {
@@ -93,4 +107,19 @@ def generate_full_body(face_image_url, outfit_prompt, api_key, deployment_id):
         "85": {"inputs": {"image": face_image_url}}, 
         "55": {"inputs": {"text": outfit_prompt}}
     }
-    return _run_inference(overrides, api_key, deployment_id)
+    
+    outputs = _run_inference(overrides, api_key, deployment_id)
+    if not outputs: return []
+
+    # [수정 포인트 3] 전신 생성 단계이므로 "Node 54"의 결과만 가져옵니다.
+    target_node_id = "54"
+    image_urls = []
+    
+    if target_node_id in outputs:
+        for img in outputs[target_node_id].get("images", []):
+            if img.get("url"): image_urls.append(img["url"])
+            
+    return image_urls
+
+
+    # return _run_inference(overrides, api_key, deployment_id)
