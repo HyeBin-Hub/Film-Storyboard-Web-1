@@ -7,18 +7,18 @@ st.set_page_config(page_title="Movie Character Creator", layout="wide")
 # --- 🔑 API Key 관리 로직 ---
 # st.sidebar.title("🔐 API 설정")
 
-# 1. secrets.toml 파일에서 먼저 찾아봄
-if "RUNCOMFY_API_KEY" in st.secrets:
-    api_key = st.secrets["RUNCOMFY_API_KEY"]
-    deployment_id = st.secrets["DEPLOYMENT_ID"]
-    # st.sidebar.success("API Key가 로드되었습니다! ✅")
-else:
-    # 2. 파일이 없으면 입력창 표시
-    api_key = st.sidebar.text_input("RunComfy API Key", type="password")
-    deployment_id = st.sidebar.text_input("Deployment ID")
-    if not api_key or not deployment_id:
-        st.sidebar.warning("API Key와 Deployment ID를 입력해주세요.")
-        st.stop() # 키가 없으면 앱 실행 중단
+# # 1. secrets.toml 파일에서 먼저 찾아봄
+# if "RUNCOMFY_API_KEY" in st.secrets:
+#     api_key = st.secrets["RUNCOMFY_API_KEY"]
+#     deployment_id = st.secrets["DEPLOYMENT_ID"]
+#     # st.sidebar.success("API Key가 로드되었습니다! ✅")
+# else:
+#     # 2. 파일이 없으면 입력창 표시
+#     api_key = st.sidebar.text_input("RunComfy API Key", type="password")
+#     deployment_id = st.sidebar.text_input("Deployment ID")
+#     if not api_key or not deployment_id:
+#         st.sidebar.warning("API Key와 Deployment ID를 입력해주세요.")
+#         st.stop() # 키가 없으면 앱 실행 중단
         
 st.title("🎬 영화 주인공 캐릭터 생성기")
 st.markdown("ComfyUI & Flux 기반 스토리보드 캐릭터 제작 도구")
